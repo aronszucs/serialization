@@ -11,6 +11,13 @@ namespace SerializationTest
     public class PersonTest
     {
         [TestMethod]
+        public void TestPersonAge()
+        {
+            Person p = GetPersonInstance();
+            Assert.AreEqual(p.Age, DateTime.Now.Year - p.BirthDate.Year);
+        }
+
+        [TestMethod]
         public void TestPersonSerialization()
         {
             string path = "persontest";
@@ -65,7 +72,7 @@ namespace SerializationTest
         private Person GetPersonInstance()
         {
             string name = "Test";
-            DateTime birth = new DateTime(2012, 01, 01);
+            DateTime birth = new DateTime(1900, 01, 01);
             Gender gender = Gender.Female;
             return new Person(name, birth, gender);
         }
