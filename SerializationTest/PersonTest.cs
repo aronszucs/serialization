@@ -2,18 +2,19 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serialization;
 using System.IO;
+using System.Text.RegularExpressions;
+
 
 namespace SerializationTest
 {
     [TestClass]
     public class PersonTest
     {
-
         [TestMethod]
         public void TestPersonSerialization()
         {
             string path = "persontest";
-            Person p1 = Instantiate();
+            Person p1 = GetPersonInstance();
             try
             {
                 p1.Serialize(path);
@@ -34,16 +35,46 @@ namespace SerializationTest
             }
         }
 
+        [TestMethod]
         public void TestPersonStringify()
         {
+            Person p = GetPersonInstance();
+            string str = p.ToString();
+            string name = FetchStrData(str, "Name");
+            string genderStr = FetchStrData(str, "Gender");
+            Gender gender;
+            if (genderStr.Equals("Male"))
+            {
+                gender = Gender.Male;
+            }
+            else if (genderStr.Equals("Female"))
+            {
+                gender = Gender.Female;
+            }
+            else
+            {
+                throw new AssertFailedException("Wrong gender");
+            }
+            int age = int.Parse( FetchStrData(str, "Age"));
 
+            Assert.AreEqual(p.Name, name);
+            Assert.AreEqual(p.Age, age);
+            Assert.AreEqual(p.Gender, gender);
         }
-        private Person Instantiate()
+
+        private Person GetPersonInstance()
         {
             string name = "Test";
             DateTime birth = new DateTime(2012, 01, 01);
             Gender gender = Gender.Female;
             return new Person(name, birth, gender);
+        }
+
+        private string FetchStrData(string str, string key)
+        {
+            Match m = Regex.Match(str, key + "[^,]*");
+            string[] s = m.ToString().Split(':');
+            return s[1].Trim();
         }
     }
 }
